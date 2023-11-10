@@ -2,26 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* styles.css */
+.chart-container {
+  width: 100%; /* Set the container width to 100% of its parent element */
+  max-width: 1200px; /* You can adjust the max-width to your desired maximum width */
+  margin: 0 auto; /* Center the chart container horizontally */
+  background: #1a1d29;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+body {
+  background: black;
+}
+.tooltip {
+  z-index: 1000;
+  position: absolute;
+  display: none;
+  color: #fff;
+  background: rgba(67, 83, 254, 0.9);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px; /* Larger border radius for rounded corners */
+  pointer-events: none; /* Ensure it doesn't interfere with chart interactions */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for a subtle depth effect */
+  font-size: 0.9rem; /* Adjust font size if needed */
+  font-weight: 500; /* Slightly bolder font for emphasis */
+  line-height: 1.4; /* Line height for better text readability */
+  transition: opacity 0.15s;
+}
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.pulse-marker {
+  animation: pulse 1s infinite;
 }
