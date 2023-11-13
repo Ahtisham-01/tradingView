@@ -15,7 +15,6 @@
     const chartRef = useRef<IChartApi | null>(null);
     const areaSeriesRef = useRef<ISeriesApi<"Area"> | null>(null);
 
-    const markersRef = useRef<Array<any>>([]);
     const tooltipRef = useRef<HTMLDivElement | null>(null);
 
     const SOCKET_URL = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999";
@@ -152,7 +151,6 @@
     
    
     
-      areaSeriesRef.current.setMarkers(markersRef.current);
     }, [lastMessage?.data]);
     
     
