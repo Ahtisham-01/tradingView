@@ -18,7 +18,7 @@ const TickChart: React.FC<TickChartProps> = ({
   const markersRef = useRef<Array<any>>([]);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
-  const SOCKET_URL = "wss://wspap.okx.com:8443/ws/v5/public";
+  const SOCKET_URL = "wss://wspap.okx.com:8443/ws/v5/public?brokerId=9999";
   const { sendMessage, lastMessage } = useWebSocket(SOCKET_URL, {
     onOpen: () => console.log("WebSocket Connected"),
     shouldReconnect: (closeEvent) => true,
