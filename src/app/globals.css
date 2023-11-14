@@ -42,7 +42,6 @@ body {
     opacity: 1;
   }
 }
-
 .pulse-marker {
   animation: pulse 1s infinite;
 }
