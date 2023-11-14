@@ -27,6 +27,7 @@ const tabArray: Tab[] = [
 ];
 
 const DataChannels: DataChannels[] = [
+  { title: "1 Minute Candle", value: "index-candle1m" },
   { title: "3 Months Candle", value: "index-candle3M" },
   { title: "1 Month Candle", value: "index-candle1M" },
   { title: "1 Week Candle", value: "index-candle1W" },
@@ -43,7 +44,6 @@ const DataChannels: DataChannels[] = [
   { title: "15 Minutes Candle", value: "index-candle15m" },
   { title: "5 Minutes Candle", value: "index-candle5m" },
   { title: "3 Minutes Candle", value: "index-candle3m" },
-  { title: "1 Minute Candle", value: "index-candle1m" },
   { title: "3 Months Candle UTC", value: "index-candle3Mutc" },
   { title: "1 Month Candle UTC", value: "index-candle1Mutc" },
   { title: "1 Week Candle UTC", value: "index-candle1Wutc" },

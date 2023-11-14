@@ -82,9 +82,8 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
     }
 
     const [timeStr, openStr, highStr, lowStr, closeStr] = data.data[0];
-
     const newCandle = {
-      time: Math.floor(parseInt(timeStr, 10) / 1000) as unknown as Time,
+      time: Math.floor(timeStr/1000) as unknown as Time,
       open: parseFloat(openStr),
       high: parseFloat(highStr),
       low: parseFloat(lowStr),
