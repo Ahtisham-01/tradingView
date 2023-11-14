@@ -68,7 +68,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
   useEffect(() => {
     if (!lastMessage?.data) return;
   
@@ -77,34 +76,27 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
   
     const [timeStr, openStr, highStr, lowStr, closeStr] = data.data[0];
     const newCandle = {
-      time: Math.floor(parseInt(timeStr, 10) / 1000) as unknown as Time, // Convert to Time type
+      time: Math.floor(parseInt(timeStr, 10) / 1000) as unknown as Time,
       open: parseFloat(openStr),
       high: parseFloat(highStr),
       low: parseFloat(lowStr),
       close: parseFloat(closeStr),
     };
   
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-    const tenMinutesAgo = currentTime - 600; // Time 10 minutes ago in seconds
-  
-    const updatedCandles = candlesRef.current.filter(
-      (c) => (c.time as unknown as number) > tenMinutesAgo // Compare times as numbers
-    );
-    const existingCandleIndex = updatedCandles.findIndex(
+    const existingCandleIndex = candlesRef.current.findIndex(
       (c) => (c.time as unknown as number) === (newCandle.time as unknown as number)
     );
     if (existingCandleIndex >= 0) {
-      updatedCandles[existingCandleIndex] = newCandle;
+      candlesRef.current[existingCandleIndex] = newCandle;
     } else {
-      updatedCandles.push(newCandle);
+      candlesRef.current.push(newCandle);
     }
-  
-    candlesRef.current = updatedCandles;
   
     if (candlestickSeriesRef.current) {
-      candlestickSeriesRef.current.setData(updatedCandles);
+      candlestickSeriesRef.current.setData(candlesRef.current);
     }
   }, [lastMessage?.data]);
+
   
   return <div className="chart-container" ref={containerRef}></div>;
 };
