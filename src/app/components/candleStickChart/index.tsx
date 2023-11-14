@@ -55,7 +55,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
         barSpacing: 15,
       });
     }
-
     const handleResize = () => {
       if (chartRef.current && containerRef.current) {
         chartRef.current.resize(containerRef.current.clientWidth, 400);
@@ -88,7 +87,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
     console.log({ beforeSettingNewData: candlesRef.current });
 
     const [timeStr, openStr, highStr, lowStr, closeStr] = data.data[0];
-
     const newCandle = {
       time: Math.floor((timeStr / 1000)) as unknown as Time,
       open: parseFloat(openStr),

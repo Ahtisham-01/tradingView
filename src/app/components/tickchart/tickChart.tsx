@@ -17,7 +17,16 @@ interface TickChartProps {
   tickerChannel?: string;
   tickerInstId?: string;
 }
+// Example static data for bets
+const staticBets = [
+  { time: 1651017600, value: 50000, bet: 100 }, // Example bet data
+  // Add more bet data here
+];
 
+interface TickChartProps {
+  tickerChannel?: string;
+  tickerInstId?: string;
+}
 const TickChart: React.FC<TickChartProps> = ({
   tickerChannel = "index-tickers",
   tickerInstId = "BTC-USDT",
@@ -45,6 +54,7 @@ const TickChart: React.FC<TickChartProps> = ({
       ],
     };
     sendMessage(JSON.stringify(message));
+    
   }, [tickerInstId, sendMessage, tickerChannel]);
 
   useEffect(() => {
@@ -101,6 +111,7 @@ const TickChart: React.FC<TickChartProps> = ({
     chartRef.current = createChart(containerRef.current, chartOptions);
     areaSeriesRef.current = chartRef.current.addAreaSeries(areaSeriesOptions);
 
+    
     chartRef.current.subscribeCrosshairMove(function (param) {
       const time = param.time as number;
 
@@ -152,7 +163,6 @@ const TickChart: React.FC<TickChartProps> = ({
 
   useEffect(() => {
     if (!lastMessage?.data) return;
-
     const data = JSON.parse(lastMessage.data);
     if (!data || !data.data || !areaSeriesRef.current) return;
 
@@ -165,30 +175,43 @@ const TickChart: React.FC<TickChartProps> = ({
     areaSeriesRef.current.update(newPoint);
   }, [lastMessage?.data]);
 
-  // This function will be called when the snapshot button is clicked
   const takeSnapshot = () => {
-    // Reference the chart container
     const chartContainer = containerRef.current;
-
+  
     if (chartContainer) {
-      // Use html2canvas to take a screenshot of the chart container
-      html2canvas(chartContainer, { useCORS: true })
+      // Explicitly set the canvas width to match the container's width
+      const canvasOptions = {
+        useCORS: true,
+        width: chartContainer.offsetWidth, // Set the canvas width
+      };
+  
+      html2canvas(chartContainer, canvasOptions)
         .then((canvas) => {
-          // Create an image from the canvas
+          console.log("Canvas Size:", canvas.width, "x", canvas.height);
+          console.log("Canvas Content:", canvas.toDataURL("image/png"));
+  
           const imageSrc = canvas.toDataURL("image/png");
-
-          const downloadLink = document.createElement("a");
-          downloadLink.href = imageSrc;
-          downloadLink.download = "full-chart-snapshot.png";
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          document.body.removeChild(downloadLink);
+  
+          if (imageSrc) {
+            const downloadLink = document.createElement("a");
+            downloadLink.href = imageSrc;
+            downloadLink.download = "full-chart-snapshot.png";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+          } else {
+            console.error("Generated image source is empty.");
+          }
         })
         .catch((err) => {
           console.error("Error taking snapshot:", err);
         });
+    } else {
+      console.error("Chart container is not available.");
     }
   };
+  
+  
 
 
  // Fullscreen toggle handler
