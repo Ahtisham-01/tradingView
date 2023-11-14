@@ -107,7 +107,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
     }
   }, [lastMessage?.data]);
 
-
   return <div className="chart-container" ref={containerRef}></div>;
 };
 

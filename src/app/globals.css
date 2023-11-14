@@ -16,8 +16,8 @@ body {
   z-index: 1000;
   position: absolute;
   display: none;
-  color: #fff;
-  background: rgba(67, 83, 254, 0.9);
+  color: black;
+  background: rgba(251, 192, 45, 1);
   border: none;
   padding: 10px 15px;
   border-radius: 8px; /* Larger border radius for rounded corners */
@@ -42,7 +42,6 @@ body {
     opacity: 1;
   }
 }
-
 .pulse-marker {
   animation: pulse 1s infinite;
 }
