@@ -55,7 +55,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
         barSpacing: 15,
       });
     }
-
     const handleResize = () => {
       if (chartRef.current && containerRef.current) {
         chartRef.current.resize(containerRef.current.clientWidth, 400);
