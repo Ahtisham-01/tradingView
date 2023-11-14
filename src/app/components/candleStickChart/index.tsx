@@ -2,10 +2,11 @@ import React, { useEffect, useRef } from "react";
 import { createChart, CrosshairMode, IChartApi, ISeriesApi, SeriesDataItemTypeMap, Time } from "lightweight-charts";
 
 interface CandlestickChartProps {
-    lastMessage: MessageEvent<any> | null;
-  }
+  lastMessage: MessageEvent<any> | null;
+  selectedChannel: string;
+}
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, selectedChannel }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
@@ -44,7 +45,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
       candlestickSeriesRef.current = chartRef.current.addCandlestickSeries({
         priceFormat: {
           type: "custom",
-          formatter: (price:any) => price.toFixed(0),
+          formatter: (price: any) => price.toFixed(0),
         },
       });
 
@@ -67,14 +68,21 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
       }
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [selectedChannel]);
+
   useEffect(() => {
     if (!lastMessage?.data) return;
-  
     const data = JSON.parse(lastMessage.data);
     if (!data || !data.data) return;
-  
+
+    if (data.arg && data.arg.channel && data.arg.channel !== selectedChannel) {
+      console.log({ currentSelectedChannel: data.arg.channel });
+      candlesRef.current = [];
+      return;
+    }
+
     const [timeStr, openStr, highStr, lowStr, closeStr] = data.data[0];
+
     const newCandle = {
       time: Math.floor(parseInt(timeStr, 10) / 1000) as unknown as Time,
       open: parseFloat(openStr),
@@ -82,22 +90,23 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage }) => {
       low: parseFloat(lowStr),
       close: parseFloat(closeStr),
     };
-  
-    const existingCandleIndex = candlesRef.current.findIndex(
-      (c) => (c.time as unknown as number) === (newCandle.time as unknown as number)
-    );
+
+    const existingCandleIndex = candlesRef.current.findIndex((c) => (c.time as unknown as number) === (newCandle.time as unknown as number));
+
     if (existingCandleIndex >= 0) {
       candlesRef.current[existingCandleIndex] = newCandle;
     } else {
       candlesRef.current.push(newCandle);
     }
-  
+
+    // Sort the dataRef array by time in ascending order
+    candlesRef.current.sort((a: any, b: any) => a.time - b.time);
+
     if (candlestickSeriesRef.current) {
       candlestickSeriesRef.current.setData(candlesRef.current);
     }
   }, [lastMessage?.data]);
 
-  
 
   return <div className="chart-container" ref={containerRef}></div>;
 };
