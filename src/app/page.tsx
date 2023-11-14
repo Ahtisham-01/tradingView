@@ -4,6 +4,7 @@ import useWebSocket from "react-use-websocket";
 import ToggleTabs from "./components/tabComponent";
 import TickChart from "./components/tickchart/tickChart";
 import CandlestickChart from "./components/candleStickChart";
+import { SeriesDataItemTypeMap } from "lightweight-charts";
 
 interface Tab {
   id: number;
@@ -28,36 +29,37 @@ const tabArray: Tab[] = [
 
 const DataChannels: DataChannels[] = [
   { title: "1 Minute Candle", value: "index-candle1m" },
-  { title: "3 Months Candle", value: "index-candle3M" },
-  { title: "1 Month Candle", value: "index-candle1M" },
-  { title: "1 Week Candle", value: "index-candle1W" },
+  { title: "3 Minutes Candle", value: "index-candle3m" },
+  { title: "5 Minutes Candle", value: "index-candle5m" },
+  { title: "15 Minutes Candle", value: "index-candle15m" },
+  { title: "30 Minutes Candle", value: "index-candle30m" },
+  { title: "1 Hour Candle", value: "index-candle1H" },
+  { title: "2 Hours Candle", value: "index-candle2H" },
+  { title: "4 Hours Candle", value: "index-candle4H" },
+  { title: "6 Hours Candle", value: "index-candle6H" },
+  { title: "12 Hours Candle", value: "index-candle12H" },
   { title: "1 Day Candle", value: "index-candle1D" },
   { title: "2 Days Candle", value: "index-candle2D" },
   { title: "3 Days Candle", value: "index-candle3D" },
   { title: "5 Days Candle", value: "index-candle5D" },
-  { title: "12 Hours Candle", value: "index-candle12H" },
-  { title: "6 Hours Candle", value: "index-candle6H" },
-  { title: "4 Hours Candle", value: "index-candle4H" },
-  { title: "2 Hours Candle", value: "index-candle2H" },
-  { title: "1 Hour Candle", value: "index-candle1H" },
-  { title: "30 Minutes Candle", value: "index-candle30m" },
-  { title: "15 Minutes Candle", value: "index-candle15m" },
-  { title: "5 Minutes Candle", value: "index-candle5m" },
-  { title: "3 Minutes Candle", value: "index-candle3m" },
-  { title: "3 Months Candle UTC", value: "index-candle3Mutc" },
-  { title: "1 Month Candle UTC", value: "index-candle1Mutc" },
-  { title: "1 Week Candle UTC", value: "index-candle1Wutc" },
+  { title: "1 Week Candle", value: "index-candle1W" },
+  { title: "1 Month Candle", value: "index-candle1M" },
+  { title: "3 Months Candle", value: "index-candle3M" },
+  { title: "6 Hours Candle UTC", value: "index-candle6Hutc" },
+  { title: "12 Hours Candle UTC", value: "index-candle12Hutc" },
   { title: "1 Day Candle UTC", value: "index-candle1Dutc" },
   { title: "2 Days Candle UTC", value: "index-candle2Dutc" },
   { title: "3 Days Candle UTC", value: "index-candle3Dutc" },
   { title: "5 Days Candle UTC", value: "index-candle5Dutc" },
-  { title: "12 Hours Candle UTC", value: "index-candle12Hutc" },
-  { title: "6 Hours Candle UTC", value: "index-candle6Hutc" }
+  { title: "1 Week Candle UTC", value: "index-candle1Wutc" },
+  { title: "1 Month Candle UTC", value: "index-candle1Mutc" },
+  { title: "3 Months Candle UTC", value: "index-candle3Mutc" },
 ];
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<number>(0);
   const selectedChannelRef = useRef<string>(DataChannels[0].value);
+  const candlesRef = useRef<SeriesDataItemTypeMap["Candlestick"][]>([]);
 
   const socketUrl = "wss://wspap.okx.com:8443/ws/v5/business?brokerId=9999";
   const { sendMessage, lastMessage, readyState } = useWebSocket(socketUrl, {
@@ -90,17 +92,18 @@ export default function Home() {
 
   const handleChannelSelect = (newChannel: string) => {
     // Unsubscribe from the previous channel
-    if (readyState === 1 && selectedChannelRef.current) {
-      sendMessage(
-        JSON.stringify({
-          op: "unsubscribe",
-          args: [{ instId: "BTC-USD", channel: selectedChannelRef.current }],
-        })
-      );
-    }
+    // if (readyState === 1 && selectedChannelRef.current) {
+    //   sendMessage(
+    //     JSON.stringify({
+    //       op: "unsubscribe",
+    //       args: [{ instId: "BTC-USD", channel: selectedChannelRef.current }],
+    //     })
+    //   );
+    // }
 
     // Update the selected channel
     selectedChannelRef.current = newChannel;
+    candlesRef.current = [];
 
     // Subscribe to the new channel
     if (readyState === 1 && newChannel) {
@@ -112,8 +115,6 @@ export default function Home() {
       );
     }
   };
-
-  console.log({ selectedChannel: selectedChannelRef.current });
 
   const parsedMessage = lastMessage ? JSON.parse(lastMessage.data) : null;
   function renderingTheSteps(step: number) {
@@ -137,7 +138,7 @@ export default function Home() {
                 ))}
               </select>
             </div>
-            <CandlestickChart lastMessage={lastMessage} selectedChannel={selectedChannelRef && selectedChannelRef.current} />
+            <CandlestickChart lastMessage={lastMessage} selectedChannel={selectedChannelRef && selectedChannelRef.current} candlesRef={candlesRef}/>
           </div>
         );
       case 1:
