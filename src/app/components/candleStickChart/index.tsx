@@ -4,13 +4,15 @@ import { createChart, CrosshairMode, IChartApi, ISeriesApi, SeriesDataItemTypeMa
 interface CandlestickChartProps {
   lastMessage: MessageEvent<any> | null;
   selectedChannel: string;
+  candlesRef:any
 }
 
-const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, selectedChannel }) => {
+const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, selectedChannel, candlesRef }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candlestickSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
-  const candlesRef = useRef<SeriesDataItemTypeMap["Candlestick"][]>([]);
+
+  console.log({ selectedChannel });
 
   useEffect(() => {
     if (containerRef.current) {
@@ -72,35 +74,38 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ lastMessage, select
 
   useEffect(() => {
     if (!lastMessage?.data) return;
+
     const data = JSON.parse(lastMessage.data);
     if (!data || !data.data) return;
 
     if (data.arg && data.arg.channel && data.arg.channel !== selectedChannel) {
       console.log({ currentSelectedChannel: data.arg.channel });
       candlesRef.current = [];
+      console.log({ oldPresistedData: candlesRef.current });
       return;
     }
+
+    console.log({ beforeSettingNewData: candlesRef.current });
 
     const [timeStr, openStr, highStr, lowStr, closeStr] = data.data[0];
 
     const newCandle = {
-      time: Math.floor(parseInt(timeStr, 10) / 1000) as unknown as Time,
+      time: Math.floor((timeStr / 1000)) as unknown as Time,
       open: parseFloat(openStr),
       high: parseFloat(highStr),
       low: parseFloat(lowStr),
       close: parseFloat(closeStr),
     };
 
-    const existingCandleIndex = candlesRef.current.findIndex((c) => (c.time as unknown as number) === (newCandle.time as unknown as number));
+    const existingCandleIndex = candlesRef.current.findIndex((c:any) => (c.time as unknown as number) === (newCandle.time as unknown as number));
 
     if (existingCandleIndex >= 0) {
       candlesRef.current[existingCandleIndex] = newCandle;
+      console.log({ oldData: candlesRef.current[existingCandleIndex] });
+      console.log({ newData: newCandle });
     } else {
       candlesRef.current.push(newCandle);
     }
-
-    // Sort the dataRef array by time in ascending order
-    candlesRef.current.sort((a: any, b: any) => a.time - b.time);
 
     if (candlestickSeriesRef.current) {
       candlestickSeriesRef.current.setData(candlesRef.current);
